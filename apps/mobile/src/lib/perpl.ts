@@ -1,3 +1,4 @@
+import { Platform } from "react-native";
 import * as ed from "@noble/ed25519";
 import { sha256, sha512 } from "@noble/hashes/sha2.js";
 import { bytesToHex as nobleHex, utf8ToBytes } from "@noble/hashes/utils.js";
@@ -58,14 +59,15 @@ async function signed<T>(method: "GET" | "POST", target: string, payload?: unkno
   const bodyHash = nobleHex(sha256(utf8ToBytes(body)));
   const canonical = [perpl.chainId, method, target, timestamp, nonce, bodyHash].join("\n");
   const sig = ed.sign(utf8ToBytes(canonical), hexToBytes(key.secretHex as `0x${string}`));
-  const res = await fetch(`${perpl.api}${target}`, {
+  const res = await fetch(perplUrl(target), {
     method,
     headers: {
       "X-API-Key": key.token,
       "X-API-Timestamp": timestamp,
       "X-API-Nonce": nonce,
       "X-API-Signature": b64url(sig),
-      ...(body ? { "Content-Type": "application/json" } : {}),
+      // text/plain keeps the proxy from re-parsing the body, so the signed bytes arrive unchanged.
+      ...(body ? { "Content-Type": PROXY ? "text/plain" : "application/json" } : {}),
     },
     body: body || undefined,
   });
@@ -73,8 +75,29 @@ async function signed<T>(method: "GET" | "POST", target: string, payload?: unkno
   return (await res.json()) as T;
 }
 
+/**
+ * Perpl's API has no CORS headers, so on web every call goes through our same-origin Vercel proxy
+ * (apps/web-deploy/api/perpl.js), which relays the already-signed request.
+ */
+const PROXY = process.env.EXPO_PUBLIC_PERPL_PROXY ?? (Platform.OS === "web" ? "/api/perpl" : "");
+const perplUrl = (target: string) => (PROXY ? `${PROXY}?target=${encodeURIComponent(target)}` : `${perpl.api}${target}`);
+
+/** Use a key created on testnet.perpl.xyz/apikeys instead of enrolling one from the app. */
+export async function importApiKey(token: string, secretHex: string) {
+  const secret = secretHex.trim().startsWith("0x") ? secretHex.trim() : `0x${secretHex.trim()}`;
+  if (!token.trim()) throw new Error("Enter the API key");
+  if (!/^0x[0-9a-fA-F]{64}$/.test(secret)) throw new Error("The secret must be a 32-byte hex Ed25519 key");
+  await storage.setJSON(KEY_STORE, { token: token.trim(), secretHex: secret } satisfies ApiKey);
+  try {
+    await getWallet(); // proves the key and signature work before we keep it
+  } catch (e) {
+    await storage.remove(KEY_STORE);
+    throw e;
+  }
+}
+
 export async function getContext(): Promise<{ markets: PerplMarket[]; tokens: PerplToken[] }> {
-  const res = await fetch(`${perpl.api}/v1/pub/context`);
+  const res = await fetch(perplUrl("/v1/pub/context"));
   if (!res.ok) throw new Error(`Perpl context: ${res.status}`);
   return res.json();
 }
@@ -84,9 +107,9 @@ export async function enrollApiKey(account: LocalAccount) {
   const secret = ed.utils.randomSecretKey();
   const publicKey = bytesToHex(ed.getPublicKey(secret));
   const post = async (path: string, body: unknown) => {
-    const res = await fetch(`${perpl.enrollApi}${path}`, {
+    const res = await fetch(PROXY ? perplUrl(path) : `${perpl.enrollApi}${path}`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": PROXY ? "text/plain" : "application/json" },
       body: JSON.stringify(body),
     });
     if (!res.ok) throw new Error(`Perpl ${path}: ${res.status} ${await res.text()}`);

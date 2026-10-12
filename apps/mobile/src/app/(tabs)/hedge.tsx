@@ -5,6 +5,7 @@ import { perpl } from "@/lib/config";
 import { AUSD_DECIMALS } from "@/lib/gpux";
 import {
   enrollApiKey,
+  importApiKey,
   estLiquidationPrice,
   getContext,
   getPositions,
@@ -29,6 +30,8 @@ export default function Hedge() {
   const [size, setSize] = useState("");
   const [leverage, setLeverage] = useState("3");
   const [collateral, setCollateral] = useState(perpl.minAccountOpen);
+  const [keyToken, setKeyToken] = useState("");
+  const [keySecret, setKeySecret] = useState("");
   const setup = useAction();
   const order = useAction();
 
@@ -74,17 +77,38 @@ export default function Hedge() {
             1. Authorize a trading key with your passkey. 2. Open a Perpl account (min 100 AUSD of Perpl testnet collateral) and allow order forwarding.
           </Body>
           {!data.enrolled ? (
-            <Button
-              title="Authorize trading key"
-              busy={setup.busy}
-              onPress={() =>
-                setup.run(async () => {
-                  await enrollApiKey(account);
-                  refresh();
-                  return "Trading key enrolled";
-                })
-              }
-            />
+            <>
+              <Button
+                title="Authorize trading key"
+                busy={setup.busy}
+                onPress={() =>
+                  setup.run(async () => {
+                    await enrollApiKey(account);
+                    refresh();
+                    return "Trading key enrolled";
+                  })
+                }
+              />
+              <Label style={{ marginTop: 14 }}>Or use a key from testnet.perpl.xyz/apikeys</Label>
+              <Input placeholder="API key" value={keyToken} onChangeText={setKeyToken} autoCapitalize="none" />
+              <Input placeholder="Secret (Ed25519, 0x…)" value={keySecret} onChangeText={setKeySecret} autoCapitalize="none" secureTextEntry />
+              <Button
+                title="Use this key"
+                kind="ghost"
+                busy={setup.busy}
+                disabled={!keyToken || !keySecret}
+                onPress={() =>
+                  setup.run(async () => {
+                    await importApiKey(keyToken, keySecret);
+                    setKeyToken("");
+                    setKeySecret("");
+                    refresh();
+                    return "Perpl key connected";
+                  })
+                }
+              />
+              <Notice>The secret stays on this device; it only signs requests locally.</Notice>
+            </>
           ) : (
             <>
               <Input label="Collateral" value={collateral} onChangeText={setCollateral} keyboardType="decimal-pad" suffix="AUSD" />
