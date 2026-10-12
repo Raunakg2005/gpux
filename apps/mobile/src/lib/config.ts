@@ -34,6 +34,9 @@ export const kuru = {
 /** ComputeToken address (lowercase) -> Kuru order book address, e.g. {"0xabc…":"0xdef…"}. Written by scripts/deploy-kuru-markets. */
 export const KURU_MARKETS: Record<string, Address> = JSON.parse(env("EXPO_PUBLIC_KURU_MARKETS", "{}"));
 
+/** Envio hosted GraphQL endpoint; empty falls back to direct chain reads. */
+export const INDEXER_URL = env("EXPO_PUBLIC_INDEXER_URL", "https://indexer.dev.hyperindex.xyz/d007e9f/v1/graphql");
+
 /** Perpl testnet (github.com/PerplFoundation/api-docs). */
 export const perpl = {
   api: env("EXPO_PUBLIC_PERPL_API", "https://testnet.perpl.xyz/api"),

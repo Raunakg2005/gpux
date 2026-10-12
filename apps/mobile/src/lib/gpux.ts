@@ -2,6 +2,7 @@ import { encodeAbiParameters, keccak256, parseUnits, sha256, type Address, type 
 import { bondVaultAbi, erc20Abi, escrowAbi, factoryAbi, indexAbi, mockAusdAbi, registryAbi } from "./abis";
 import { confirm, publicClient, type Wallet } from "./clients";
 import { gpux } from "./config";
+import { indexerEnabled, redemptionsOf } from "./indexer";
 
 export const AUSD_DECIMALS = 6;
 export const GPU_HOUR_DECIMALS = 18;
@@ -126,8 +127,26 @@ export async function redeem(wallet: Wallet, seriesId: bigint, hours: string, ac
   );
 }
 
-/** Linear scan is fine on testnet; the Envio indexer replaces this for production. */
+/** Reads from the Envio indexer; falls back to a linear onchain scan if it's unavailable. */
 export async function myRedemptions(user: Address): Promise<Redemption[]> {
+  if (indexerEnabled()) {
+    try {
+      const rows = await redemptionsOf(user);
+      return rows.map((r) => ({
+        id: BigInt(r.id),
+        seriesId: BigInt(r.seriesId),
+        amount: BigInt(r.amount),
+        commitment: "0x",
+        status: r.status,
+      }));
+    } catch {
+      // fall through to chain reads
+    }
+  }
+  return scanRedemptions(user);
+}
+
+async function scanRedemptions(user: Address): Promise<Redemption[]> {
   const count = await publicClient.readContract({ address: gpux.escrow, abi: escrowAbi, functionName: "redemptionCount" });
   const ids = Array.from({ length: Number(count) }, (_, i) => BigInt(i));
   const rows = await Promise.all(

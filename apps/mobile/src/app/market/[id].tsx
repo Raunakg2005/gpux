@@ -7,6 +7,8 @@ import { KURU_MARKETS } from "@/lib/config";
 import { AUSD_DECIMALS, bondStatus, getProvider, GPU_HOUR_DECIMALS, listSeries, redeem, seriesLabel, tokenBalance } from "@/lib/gpux";
 import { estimateBuy, estimateSell, getL2Book, getMarketParams, placeLimit, placeMarket } from "@/lib/kuru";
 import { sealSecret } from "@/lib/mera";
+import { indexerEnabled, recentFills } from "@/lib/indexer";
+import { formatUnits } from "viem";
 import { fmt, pct } from "@/lib/format";
 import { storage } from "@/lib/storage";
 import { useWallet } from "@/state/account";
@@ -31,14 +33,15 @@ export default function MarketScreen() {
       const s = (await listSeries()).find((x) => String(x.id) === id);
       if (!s) throw new Error("Unknown contract");
       const market = KURU_MARKETS[s.token.toLowerCase()];
-      const [book, params, held, provider, bond] = await Promise.all([
+      const [book, params, held, provider, bond, fills] = await Promise.all([
         market ? getL2Book(market) : null,
         market ? getMarketParams(market) : null,
         tokenBalance(s.token, account.address),
         getProvider(s.provider),
         bondStatus(s),
+        market && indexerEnabled() ? recentFills(market, 8).catch(() => []) : [],
       ]);
-      return { s, market, book, params, held, provider, bond };
+      return { s, market, book, params, held, provider, bond, fills };
     },
     1000,
     [id],
@@ -55,7 +58,7 @@ export default function MarketScreen() {
   }, [data?.book, amount, price, side, type]);
 
   if (!data) return <Notice>Loading…</Notice>;
-  const { s, market, book, params, held, provider, bond } = data;
+  const { s, market, book, params, held, provider, bond, fills } = data;
   const coverage = bond.supply > 0n ? Number((bond.locked * 10n ** 18n) / bond.supply) / 10 ** AUSD_DECIMALS : 0;
 
   const submit = () =>
@@ -102,6 +105,21 @@ export default function MarketScreen() {
         {book ? <OrderBookView book={book} /> : <Notice>This contract isn't listed on Kuru yet.</Notice>}
         {params && <Label style={{ marginTop: 6 }}>Kuru fees: taker {params.takerFeeBps} bps · maker {params.makerFeeBps} bps</Label>}
       </Card>
+
+      {params && fills.length > 0 && (
+        <Card>
+          <Label>Recent trades · indexed by Envio</Label>
+          {fills.map((f) => (
+            <Row key={f.id} style={{ justifyContent: "space-between", paddingVertical: 3 }}>
+              <Mono color={f.isBuy ? c.bid : c.ask}>{Number(formatUnits(BigInt(f.price), 18)).toFixed(4)}</Mono>
+              <Mono color={c.dim}>{Number(formatUnits(BigInt(f.size), String(params.sizePrecision).length - 1)).toFixed(2)} hr</Mono>
+              <Mono color={c.faint} size={12}>
+                {new Date(f.timestamp * 1000).toLocaleTimeString()}
+              </Mono>
+            </Row>
+          ))}
+        </Card>
+      )}
 
       <Card>
         <Segmented options={SIDES} value={side} onChange={setSide} />
