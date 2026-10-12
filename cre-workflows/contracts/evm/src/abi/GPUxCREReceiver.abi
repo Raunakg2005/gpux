@@ -1,0 +1,1 @@
+[{"type":"function","name":"onReport","inputs":[{"name":"metadata","type":"bytes","internalType":"bytes"},{"name":"report","type":"bytes","internalType":"bytes"}],"outputs":[],"stateMutability":"nonpayable"},{"type":"event","name":"ReportProcessed","inputs":[{"name":"action","type":"uint8","indexed":true,"internalType":"uint8"}],"anonymous":false}]

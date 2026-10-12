@@ -48,6 +48,11 @@ If the user types **"continue"** (or similar), resume from **Next steps** below 
 - Foundry is installed natively at `%USERPROFILE%\.foundry\bin\forge.exe` (WSL timed out). On a new machine, install Foundry, then run `forge install foundry-rs/forge-std --no-git` inside `contracts/`.
 - Install deps: `cd contracts && npm i`, and `cd apps/mobile && npm i`.
 
+## Repo & accounts
+- GitHub: https://github.com/Raunakg2005/gpux (branch `main`; `gh` is logged in as Raunakg2005). Commit messages carry no AI attribution. `.env` files and `contracts/lib` are gitignored; after cloning run `forge install foundry-rs/forge-std --no-git` in `contracts/`.
+- Chainlink CRE: the Early Access page 404s. The bounty accepts "build, simulate, or deploy", so target `cre workflow simulate` (needs only a CRE account + `cre login`).
+- Still to do by the user: add `metropolis@hackathon.monad.xyz` as a repo collaborator; ask Perpl (hackathon Discord) for Origin whitelisting + the testnet collateral token.
+
 ## Next steps
 - [x] Pick the track and problem statement, scaffold the monorepo
 - [x] Write the contracts and tests (passing)

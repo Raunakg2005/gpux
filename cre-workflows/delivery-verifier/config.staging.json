@@ -1,0 +1,30 @@
+{
+  "schedule": "0 */5 * * * *",
+  "chainSelectorName": "monad-testnet",
+  "escrow": "0x98cd804aE58Ea5FC9fA4Fb403f6D0D88acDd0ac8",
+  "factory": "0xe65147390d3ea7157Ea22c36BF9406626E373BB4",
+  "receiver": "0xeF963E63d15C2f27baC25b2F7804440B7fdA4c7D",
+  "telemetryUrl": "https://raw.githubusercontent.com/Raunakg2005/gpux/main/cre-workflows/mock-provider/telemetry.json",
+  "markets": [
+    {
+      "gpuType": "H100",
+      "region": "US-EAST",
+      "orderBook": "0xF79897971C1C495A1Ca43C15EE81589b9De1102f"
+    },
+    {
+      "gpuType": "H100",
+      "region": "EU-WEST",
+      "orderBook": "0xb0Cd07612a2E7db094DCB6f563866B9D4009dF64"
+    },
+    {
+      "gpuType": "A100",
+      "region": "US-EAST",
+      "orderBook": "0x2a7CC86E7817Ce15290B2059F54222404ba15894"
+    },
+    {
+      "gpuType": "B200",
+      "region": "US-WEST",
+      "orderBook": "0x88540C94471C377d1faa80b6D6309ABCcdBE3032"
+    }
+  ]
+}

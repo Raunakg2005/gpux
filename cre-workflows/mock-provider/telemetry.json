@@ -1,0 +1,11 @@
+{
+  "description": "Mock GPU provider telemetry for the GPUx CRE delivery-verifier. A provider meets its SLA when uptimeBps >= slaUptimeBps; ids in failedRedemptions are reported as not delivered (used to demo bond slashing).",
+  "slaUptimeBps": 9900,
+  "providers": {
+    "0xbac277e47dd7b95c04bb3517b76c1dd9151a054a": {
+      "name": "NeoCloud Labs",
+      "uptimeBps": 9987,
+      "failedRedemptions": []
+    }
+  }
+}
