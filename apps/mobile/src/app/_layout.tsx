@@ -18,6 +18,7 @@ export default function RootLayout() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="onboard" options={{ headerShown: false }} />
         <Stack.Screen name="market/[id]" options={{ title: "Market" }} />
+        <Stack.Screen name="deposit" options={{ title: "Deposit from any chain" }} />
       </Stack>
     </AccountProvider>
   );

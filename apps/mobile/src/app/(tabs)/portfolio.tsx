@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Linking, ScrollView, View } from "react-native";
 import { parseUnits } from "viem";
+import { router } from "expo-router";
 import { Body, Button, c, Card, Input, Label, Mono, Notice, Row, Stat } from "@/components/ui";
 import { AUSD_HAS_FAUCET, EXPLORER, gpux } from "@/lib/config";
 import { AUSD_DECIMALS, ausdBalance, faucetAusd, GPU_HOUR_DECIMALS, listSeries, myRedemptions, seriesLabel, tokenBalance } from "@/lib/gpux";
@@ -61,6 +62,14 @@ export default function Portfolio() {
             {gas.ok && <Notice kind="ok">{gas.ok}</Notice>}
           </View>
         )}
+      </Card>
+
+      <Card>
+        <Label>Deposit from any chain</Label>
+        <Body dim style={{ marginBottom: 8 }}>
+          Bring USDC, ETH, SOL or BTC from 30+ chains to this passkey address on Monad, via Aurora Intents.
+        </Body>
+        <Button title="Deposit from any chain" kind="ghost" onPress={() => router.push("/deposit")} />
       </Card>
 
       <Card>

@@ -1,3 +1,7 @@
 {
-  "rewrites": [{ "source": "/((?!api/).*)", "destination": "/index.html" }]
+  "rewrites": [{ "source": "/((?!api/).*)", "destination": "/index.html" }],
+  "functions": {
+    "api/perpl.js": { "regions": ["bom1"] },
+    "api/intents.js": { "regions": ["bom1"] }
+  }
 }
