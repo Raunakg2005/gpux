@@ -25,6 +25,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="portfolio" options={{ title: "Portfolio", tabBarIcon: icon("◎") }} />
       <Tabs.Screen name="risk" options={{ title: "Risk", tabBarIcon: icon("△") }} />
       <Tabs.Screen name="vault" options={{ title: "Vault", tabBarIcon: icon("⚿") }} />
+      <Tabs.Screen name="copilot" options={{ title: "Copilot", tabBarIcon: icon("✦") }} />
     </Tabs>
   );
 }

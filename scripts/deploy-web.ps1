@@ -24,5 +24,12 @@ if ($existing -notmatch "FAUCET_PRIVATE_KEY") {
   $line.Substring("FAUCET_PRIVATE_KEY=".Length).Trim() | vercel env add FAUCET_PRIVATE_KEY production --sensitive --yes --force
   if ($LASTEXITCODE -ne 0) { Pop-Location; throw "could not store FAUCET_PRIVATE_KEY in Vercel" }
 }
+# Copilot key (Kimi), same pattern: stored once as a sensitive Vercel env var.
+if ($existing -notmatch "KIMI_API_KEY") {
+  $kline = Get-Content (Join-Path $repo ".env") | Where-Object { $_ -match "^KIMI_API_KEY=" } | Select-Object -First 1
+  if ($kline) {
+    $kline.Substring("KIMI_API_KEY=".Length).Trim() | vercel env add KIMI_API_KEY production --sensitive --yes --force
+  }
+}
 vercel deploy --prod --yes
 Pop-Location

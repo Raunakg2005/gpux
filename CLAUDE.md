@@ -77,7 +77,8 @@ If the user types **"continue"** (or similar), resume from **Next steps** below 
 - [ ] Perpl enrollment proxy (tiny server that adds the Origin header)
 - [ ] Aurora Intents any-chain deposit screen
 - [ ] Kimi copilot + Qwen procurement agent (`services/ai-agents`) and a Copilot tab
-- [ ] MetaMask Agent Wallet "compute trading" plugin
+- [x] MetaMask Agent Wallet plugin `metamask-plugin/` (`mm-plugin-gpux`, oclif plugin for `mm` 7.1.0): commands `gpux markets|quote|portfolio|buy|sell|redeem|faucet`, guardrails in `src/lib/guard.ts` (8 vitest tests), agent skill `skills/gpux-compute-trading/SKILL.md`. Verified installed in the real `mm`: markets and quote work on live testnet. Gotchas: the tsconfig needs `moduleResolution: Bundler` (the SDK d.ts uses extensionless imports); mm's npm install fails on paths with spaces, so it's staged at `C:\Users\Lenovo\gpux-mm-plugin` (copy of dist/package.json/manifest/skills plus a **junction** `node_modules` → the plugin's node_modules, so it shares the host's `@metamask/agent-wallet`). Wallet commands need `mm init`/login and Monad Testnet in mm `customEvmChains` (not done).
+- Qwen: Alibaba Cloud international doesn't allow India signups, so skip it and use Kimi.
 - [ ] Provider portal (Next.js) with real contract calls
 - [ ] WebCrypto polyfill so the Vault works on native; native dev build
 - [ ] Seed test volume (traction), logo, 3-min demo video, 2-min pitch, README pitch section, give metropolis@hackathon.monad.xyz access to the GitHub repo, deploy the web build

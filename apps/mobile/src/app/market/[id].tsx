@@ -18,11 +18,12 @@ const SIDES = ["Buy", "Sell"] as const;
 const TYPES = ["Market", "Limit"] as const;
 
 export default function MarketScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  // side/amount arrive pre-filled from the Copilot's suggested order.
+  const { id, side: sideParam, amount: amountParam } = useLocalSearchParams<{ id: string; side?: string; amount?: string }>();
   const { account, wallet } = useWallet();
-  const [side, setSide] = useState<(typeof SIDES)[number]>("Buy");
+  const [side, setSide] = useState<(typeof SIDES)[number]>(sideParam === "sell" ? "Sell" : "Buy");
   const [type, setType] = useState<(typeof TYPES)[number]>("Market");
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(amountParam ?? "");
   const [price, setPrice] = useState("");
   const [redeemHours, setRedeemHours] = useState("");
   const trade = useAction();
