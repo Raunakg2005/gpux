@@ -23,7 +23,7 @@ export async function requestGas(address: Address): Promise<string> {
 /** Fire-and-forget after sign-up/sign-in so the first transaction just works. */
 export async function ensureGas(address: Address) {
   try {
-    if ((await monBalance(address)) < parseEther("0.01")) await requestGas(address);
+    if ((await monBalance(address)) < parseEther("0.08")) await requestGas(address);
   } catch {
     // best effort; Portfolio has a manual "Get gas" button
   }

@@ -5,8 +5,9 @@ import { createPublicClient, createWalletClient, formatEther, http, isAddress, p
 import { privateKeyToAccount } from "viem/accounts";
 import { monadTestnet } from "viem/chains";
 
-const DRIP = parseEther("0.05");
-const ELIGIBLE_BELOW = parseEther("0.01"); // only top up nearly-empty accounts
+// Monad reserves the full gas limit per tx (~0.02-0.03 MON each), so give enough for ~6-8 txs.
+const DRIP = parseEther("0.2");
+const ELIGIBLE_BELOW = parseEther("0.08"); // only top up nearly-empty accounts
 const transport = http(process.env.MONAD_RPC_URL || "https://testnet-rpc.monad.xyz");
 
 export default async function handler(req, res) {

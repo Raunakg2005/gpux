@@ -49,7 +49,7 @@ export default function Portfolio() {
           <Stat label="Trading AUSD" value={data ? fmt(data.margin, AUSD_DECIMALS) : "—"} />
           <Stat label="Gas (MON)" value={data ? fmtMon(data.mon) : "—"} color={data && data.mon === 0n ? c.warn : undefined} />
         </Row>
-        {data && data.mon < 10n ** 16n && (
+        {data && data.mon < 8n * 10n ** 16n && (
           <View style={{ marginTop: 10 }}>
             <Button
               title="Get gas (testnet MON)"
