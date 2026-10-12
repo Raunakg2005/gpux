@@ -1,0 +1,255 @@
+{
+ "note": "Trimmed Nansen smart-money ETH perp-trades sample (side/action/value only) for unit tests",
+ "data": [
+  {
+   "side": "Long",
+   "action": "Reduce",
+   "value_usd": 822974
+  },
+  {
+   "side": "Short",
+   "action": "Close",
+   "value_usd": 752212
+  },
+  {
+   "side": "Long",
+   "action": "Open",
+   "value_usd": 475995
+  },
+  {
+   "side": "Long",
+   "action": "Close",
+   "value_usd": 470427
+  },
+  {
+   "side": "Long",
+   "action": "Reduce",
+   "value_usd": 256279
+  },
+  {
+   "side": "Long",
+   "action": "Reduce",
+   "value_usd": 256120
+  },
+  {
+   "side": "Short",
+   "action": "Open",
+   "value_usd": 249966
+  },
+  {
+   "side": "Long",
+   "action": "Open",
+   "value_usd": 151101
+  },
+  {
+   "side": "Short",
+   "action": "Reduce",
+   "value_usd": 136826
+  },
+  {
+   "side": "Short",
+   "action": "Add",
+   "value_usd": 128270
+  },
+  {
+   "side": "Short",
+   "action": "Add",
+   "value_usd": 128198
+  },
+  {
+   "side": "Short",
+   "action": "Add",
+   "value_usd": 127202
+  },
+  {
+   "side": "Short",
+   "action": "Add",
+   "value_usd": 127185
+  },
+  {
+   "side": "Short",
+   "action": "Close",
+   "value_usd": 119057
+  },
+  {
+   "side": "Short",
+   "action": "Reduce",
+   "value_usd": 113903
+  },
+  {
+   "side": "Long",
+   "action": "Reduce",
+   "value_usd": 100000
+  },
+  {
+   "side": "Short",
+   "action": "Reduce",
+   "value_usd": 89456
+  },
+  {
+   "side": "Long",
+   "action": "Close",
+   "value_usd": 77517
+  },
+  {
+   "side": "Long",
+   "action": "Reduce",
+   "value_usd": 25098
+  },
+  {
+   "side": "Long",
+   "action": "Add",
+   "value_usd": 20002
+  },
+  {
+   "side": "Long",
+   "action": "Add",
+   "value_usd": 19998
+  },
+  {
+   "side": "Short",
+   "action": "Add",
+   "value_usd": 12850
+  },
+  {
+   "side": "Short",
+   "action": "Add",
+   "value_usd": 12827
+  },
+  {
+   "side": "Short",
+   "action": "Add",
+   "value_usd": 12686
+  },
+  {
+   "side": "Long",
+   "action": "Reduce",
+   "value_usd": 12172
+  },
+  {
+   "side": "Short",
+   "action": "Add",
+   "value_usd": 11039
+  },
+  {
+   "side": "Long",
+   "action": "Add",
+   "value_usd": 10003
+  },
+  {
+   "side": "Long",
+   "action": "Add",
+   "value_usd": 9999
+  },
+  {
+   "side": "Long",
+   "action": "Add",
+   "value_usd": 9995
+  },
+  {
+   "side": "Short",
+   "action": "Add",
+   "value_usd": 9920
+  },
+  {
+   "side": "Short",
+   "action": "Add",
+   "value_usd": 9920
+  },
+  {
+   "side": "Short",
+   "action": "Add",
+   "value_usd": 9916
+  },
+  {
+   "side": "Short",
+   "action": "Add",
+   "value_usd": 9915
+  },
+  {
+   "side": "Short",
+   "action": "Add",
+   "value_usd": 8604
+  },
+  {
+   "side": "Short",
+   "action": "Add",
+   "value_usd": 7851
+  },
+  {
+   "side": "Long",
+   "action": "Add",
+   "value_usd": 6334
+  },
+  {
+   "side": "Short",
+   "action": "Add",
+   "value_usd": 5557
+  },
+  {
+   "side": "Short",
+   "action": "Add",
+   "value_usd": 5103
+  },
+  {
+   "side": "Short",
+   "action": "Add",
+   "value_usd": 5048
+  },
+  {
+   "side": "Short",
+   "action": "Add",
+   "value_usd": 5044
+  },
+  {
+   "side": "Short",
+   "action": "Add",
+   "value_usd": 5015
+  },
+  {
+   "side": "Short",
+   "action": "Add",
+   "value_usd": 5010
+  },
+  {
+   "side": "Short",
+   "action": "Reduce",
+   "value_usd": 4898
+  },
+  {
+   "side": "Short",
+   "action": "Reduce",
+   "value_usd": 4898
+  },
+  {
+   "side": "Short",
+   "action": "Reduce",
+   "value_usd": 4898
+  },
+  {
+   "side": "Short",
+   "action": "Reduce",
+   "value_usd": 4897
+  },
+  {
+   "side": "Short",
+   "action": "Reduce",
+   "value_usd": 4897
+  },
+  {
+   "side": "Short",
+   "action": "Reduce",
+   "value_usd": 4897
+  },
+  {
+   "side": "Short",
+   "action": "Reduce",
+   "value_usd": 4890
+  },
+  {
+   "side": "Short",
+   "action": "Reduce",
+   "value_usd": 4890
+  }
+ ]
+}

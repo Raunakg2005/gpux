@@ -46,4 +46,8 @@ export const perpl = {
   enrollApi: or(process.env.EXPO_PUBLIC_PERPL_ENROLL_API, "https://testnet.perpl.xyz/api"),
   chainId: 10143,
   exchange: "0x1964c32f0be608e7d29302aff5e61268e72080cc" as Address,
+  /** Perpl testnet collateral (its own AUSD, from /v1/pub/context), not GPUx's MockAUSD. */
+  collateral: "0xa9012a055bd4e0edff8ce09f960291c09d5322dc" as Address,
+  /** instances[].min_account_open_amount = 100 AUSD. */
+  minAccountOpen: "100",
 };

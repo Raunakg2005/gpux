@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ScrollView, View } from "react-native";
 import { Body, Button, c, Card, Input, Label, Mono, Notice, Row, Segmented, Stat } from "@/components/ui";
-import { gpux } from "@/lib/config";
+import { perpl } from "@/lib/config";
 import { AUSD_DECIMALS } from "@/lib/gpux";
 import {
   enrollApiKey,
@@ -28,7 +28,7 @@ export default function Hedge() {
   const [side, setSide] = useState<(typeof SIDES)[number]>("Short");
   const [size, setSize] = useState("");
   const [leverage, setLeverage] = useState("3");
-  const [collateral, setCollateral] = useState("100");
+  const [collateral, setCollateral] = useState(perpl.minAccountOpen);
   const setup = useAction();
   const order = useAction();
 
@@ -71,7 +71,7 @@ export default function Hedge() {
         <Card>
           <Label>One-time setup</Label>
           <Body dim style={{ marginBottom: 8 }}>
-            1. Authorize a trading key with your passkey. 2. Open a Perpl account with AUSD collateral and allow order forwarding.
+            1. Authorize a trading key with your passkey. 2. Open a Perpl account (min 100 AUSD of Perpl testnet collateral) and allow order forwarding.
           </Body>
           {!data.enrolled ? (
             <Button
@@ -93,7 +93,7 @@ export default function Hedge() {
                 busy={setup.busy}
                 onPress={() =>
                   setup.run(async () => {
-                    await setupExchangeAccount(wallet, gpux.ausd, collateral, AUSD_DECIMALS);
+                    await setupExchangeAccount(wallet, perpl.collateral, collateral, AUSD_DECIMALS);
                     refresh();
                     return "Account ready";
                   })
