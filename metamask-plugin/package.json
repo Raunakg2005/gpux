@@ -1,0 +1,52 @@
+{
+  "name": "mm-plugin-gpux",
+  "version": "0.1.0",
+  "description": "Trade GPU compute from the MetaMask Agent Wallet CLI (mm): quote, buy, sell and redeem bonded GPU-hour contracts on Kuru (Monad), with spend and price guardrails",
+  "license": "MIT",
+  "type": "module",
+  "keywords": ["oclif-plugin", "metamask", "agent-wallet", "monad", "kuru", "gpu", "compute", "ai-agents"],
+  "files": ["dist", "oclif.manifest.json", "skills"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json && oclif manifest",
+    "type-check": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run"
+  },
+  "oclif": {
+    "bin": "mm",
+    "commands": "./dist/commands",
+    "topicSeparator": " ",
+    "topics": {
+      "gpux": { "description": "Trade bonded GPU-hour contracts (H100/A100/B200) on Monad with your MetaMask Agent Wallet" }
+    }
+  },
+  "mm": {
+    "schemaVersion": 1,
+    "minCliVersion": ">=6.2.0 <8",
+    "capabilities": [],
+    "commands": [
+      { "id": "gpux:markets", "capabilities": [], "dataAccess": [] },
+      { "id": "gpux:quote", "capabilities": [], "dataAccess": [] },
+      { "id": "gpux:portfolio", "capabilities": ["wallet-read"], "dataAccess": ["accounts"] },
+      { "id": "gpux:buy", "capabilities": ["wallet-read", "wallet-submit"], "dataAccess": ["accounts"] },
+      { "id": "gpux:sell", "capabilities": ["wallet-read", "wallet-submit"], "dataAccess": ["accounts"] },
+      { "id": "gpux:redeem", "capabilities": ["wallet-read", "wallet-submit"], "dataAccess": ["accounts"] },
+      { "id": "gpux:faucet", "capabilities": ["wallet-read", "wallet-submit"], "dataAccess": ["accounts"] }
+    ]
+  },
+  "peerDependencies": {
+    "@metamask/agent-wallet": ">=6.2.0 <8"
+  },
+  "dependencies": {
+    "viem": "2.57.4"
+  },
+  "devDependencies": {
+    "@metamask/agent-wallet": "7.1.0",
+    "@types/node": "22.7.5",
+    "oclif": "4.17.0",
+    "typescript": "5.6.3",
+    "vitest": "3.2.4"
+  },
+  "engines": {
+    "node": ">=22.18"
+  }
+}
