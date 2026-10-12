@@ -37233,6 +37233,7 @@ var configSchema = objectType({
 var ACTION_SETTLE = 1;
 var ACTION_PUBLISH = 2;
 var KURU_TO_INDEX = 10n ** 12n;
+var REPORT_GAS_LIMIT = "1000000";
 function evmClient(config) {
   const network = getNetwork({ chainFamily: "evm", chainSelectorName: config.chainSelectorName, isTestnet: true });
   if (!network)
@@ -37242,9 +37243,12 @@ function evmClient(config) {
 function sendReport3(runtime, action, payload) {
   const receiver = new GPUxCREReceiver(evmClient(runtime.config), runtime.config.receiver);
   const report = encodeAbiParameters2(parseAbiParameters2("uint8 action, bytes payload"), [action, payload]);
-  const result = receiver.writeReport(runtime, report);
+  const result = receiver.writeReport(runtime, report, { gasLimit: REPORT_GAS_LIMIT });
   if (result.txStatus !== TxStatus.SUCCESS) {
     throw new Error(`Report write failed: ${result.errorMessage || result.txStatus}`);
+  }
+  if (result.receiverContractExecutionStatus === 1) {
+    throw new Error("GPUxCREReceiver reverted while processing the report");
   }
   return bytesToHex3(result.txHash || new Uint8Array(32));
 }

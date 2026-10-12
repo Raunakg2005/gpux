@@ -45,6 +45,8 @@ const ACTION_SETTLE = 1
 const ACTION_PUBLISH = 2
 /** Kuru bestBidAsk() is 1e18-scaled; ComputeIndex stores AUSD with 6 decimals. */
 const KURU_TO_INDEX = 10n ** 12n
+/** settle() makes several external calls (~180k gas); the default report gas is too low. */
+const REPORT_GAS_LIMIT = '1000000'
 
 type Telemetry = {
 	slaUptimeBps: number
@@ -60,9 +62,13 @@ function evmClient(config: Config) {
 function sendReport(runtime: Runtime<Config>, action: number, payload: Hex): string {
 	const receiver = new GPUxCREReceiver(evmClient(runtime.config), runtime.config.receiver as Address)
 	const report = encodeAbiParameters(parseAbiParameters('uint8 action, bytes payload'), [action, payload])
-	const result = receiver.writeReport(runtime, report)
+	const result = receiver.writeReport(runtime, report, { gasLimit: REPORT_GAS_LIMIT })
 	if (result.txStatus !== TxStatus.SUCCESS) {
 		throw new Error(`Report write failed: ${result.errorMessage || result.txStatus}`)
+	}
+	// The forwarder tx can succeed while our receiver reverts (e.g. out of gas); 1 = REVERTED.
+	if (result.receiverContractExecutionStatus === 1) {
+		throw new Error('GPUxCREReceiver reverted while processing the report')
 	}
 	return bytesToHex(result.txHash || new Uint8Array(32))
 }

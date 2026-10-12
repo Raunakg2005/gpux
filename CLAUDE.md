@@ -65,7 +65,8 @@ If the user types **"continue"** (or similar), resume from **Next steps** below 
   - Kuru markets: H100 US-EAST `0xF79897971C1C495A1Ca43C15EE81589b9De1102f`, H100 EU-WEST `0xb0Cd07612a2E7db094DCB6f563866B9D4009dF64`, A100 `0x2a7CC86E7817Ce15290B2059F54222404ba15894`, B200 `0x88540C94471C377d1faa80b6D6309ABCcdBE3032`
 - [x] End-to-end test by the user (12 Oct) in Edge with a Windows Hello passkey: Mera sign-up, testnet AUSD faucet, Kuru market buy all settled onchain. The user's app account is `0x48fa39Fb9725897272e81a5bAf010920F23690A2` (funded with 0.3 MON from the deployer). The RPC is limited to 15 req/s, so the app batches reads through Multicall3. A new passkey account needs testnet MON for gas before any transaction.
 - [ ] Market-maker / hedge bot (`services/hedge-bot`): quote on Kuru around the index; Perpl API bot; Nansen signal
-- [ ] Chainlink CRE workflows: delivery-verifier (settle), index-publisher, auto-roll, risk-guard; plus a mock provider uptime API
+- [x] Chainlink CRE (12 Oct): `contracts/src/GPUxCREReceiver.sol` (ReceiverTemplate; 3 tests) deployed at `0xeF963E63d15C2f27baC25b2F7804440B7fdA4c7D` via `script/DeployCRE.s.sol`. It is the escrow oracle and the index publisher. The `cre-workflows/delivery-verifier` workflow has a log trigger (settles redemptions from HTTP telemetry with consensus) and a cron trigger (publishes Kuru mids to the index). Both were run with `cre workflow simulate --broadcast` and verified onchain; see `cre-workflows/README.md`. Gotchas: writeReport needs `gasLimit` 1,000,000 or the receiver silently runs out of gas; check `receiverContractExecutionStatus`. CRE CLI is at `%LOCALAPPDATA%\Programs\cre\cre.exe` and Bun at `%USERPROFILE%\.bun\bin`.
+- [ ] (optional) CRE auto-roll / risk-guard handlers
 - [ ] Envio HyperIndex indexer; switch the app's linear scans to GraphQL
 - [ ] Perpl enrollment proxy (tiny server that adds the Origin header)
 - [ ] Aurora Intents any-chain deposit screen
