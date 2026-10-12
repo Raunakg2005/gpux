@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useMemo, useState, type ReactNo
 import type { LocalAccount } from "viem";
 import { walletFor, type Wallet } from "@/lib/clients";
 import * as mera from "@/lib/mera";
+import { ensureGas } from "@/lib/gas";
 
 type AccountState = {
   account: LocalAccount | null;
@@ -16,8 +17,12 @@ const Ctx = createContext<AccountState | null>(null);
 export function AccountProvider({ children }: { children: ReactNode }) {
   const [account, setAccount] = useState<LocalAccount | null>(null);
 
-  const create = useCallback(async (name: string) => setAccount(await mera.createAccount(name)), []);
-  const signIn = useCallback(async () => setAccount(await mera.signIn()), []);
+  const start = useCallback((a: LocalAccount) => {
+    setAccount(a);
+    ensureGas(a.address); // new passkey accounts start with 0 MON
+  }, []);
+  const create = useCallback(async (name: string) => start(await mera.createAccount(name)), [start]);
+  const signIn = useCallback(async () => start(await mera.signIn()), [start]);
   const signOut = useCallback(() => {
     mera.signOut();
     setAccount(null);

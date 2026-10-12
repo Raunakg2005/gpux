@@ -53,6 +53,11 @@ If the user types **"continue"** (or similar), resume from **Next steps** below 
 - Chainlink CRE: the Early Access page 404s. The bounty accepts "build, simulate, or deploy", so target `cre workflow simulate` (needs only a CRE account + `cre login`).
 - Still to do by the user: add `metropolis@hackathon.monad.xyz` as a repo collaborator; ask Perpl (hackathon Discord) for Origin whitelisting + the testnet collateral token.
 
+## Live web app
+- **https://gpux-web.vercel.app** (Vercel project `gpux-web`, team raunak-kumar-guptas-projects; public). Deploy: `cd apps/mobile && npx expo export -p web`, copy `dist/` to `monard hacks/gpux-web/` (keep its `vercel.json` SPA rewrite), then run `vercel deploy --prod --yes` **in the user's terminal tab** (the sandbox can't read the Vercel credentials).
+- Passkeys are bound to the domain, so accounts on the live site are new addresses with 0 MON. **Gas faucet (done):** `apps/web-deploy/api/faucet.js` (Vercel function at `/api/faucet`) sends 0.05 MON to accounts under 0.01 MON. It is funded by a separate hot wallet `0x6Ea3427210223F975CB0999D880dAAe65b6fb223` (key in `gpux/.env` as `FAUCET_PRIVATE_KEY` and in Vercel as a sensitive production env var). The app calls it automatically after sign-up/sign-in (`src/lib/gas.ts`); Portfolio shows MON balance and a "Get gas" button. Redeploy everything: `powershell -ExecutionPolicy Bypass -File .\scripts\deploy-web.ps1` in the user's terminal.
+- **Monad charges the full gas LIMIT, not gas used**: a CRE report with a 1M limit costs about 0.1 MON. Keep an eye on the faucet (0.25 MON initially) and deployer (~0.19 MON) balances; ask the hackathon Discord for more test MON.
+
 ## Next steps
 - [x] Pick the track and problem statement, scaffold the monorepo
 - [x] Write the contracts and tests (passing)

@@ -5,6 +5,7 @@ import { Body, Button, c, Card, Input, Label, Mono, Notice, Row, Stat } from "@/
 import { AUSD_HAS_FAUCET, EXPLORER, gpux } from "@/lib/config";
 import { AUSD_DECIMALS, ausdBalance, faucetAusd, GPU_HOUR_DECIMALS, listSeries, myRedemptions, seriesLabel, tokenBalance } from "@/lib/gpux";
 import { depositToMargin, marginBalance } from "@/lib/kuru";
+import { fmtMon, monBalance, requestGas } from "@/lib/gas";
 import { fmt, short } from "@/lib/format";
 import { useAccount, useWallet } from "@/state/account";
 import { useAction, usePoll } from "@/state/usePoll";
@@ -15,9 +16,11 @@ export default function Portfolio() {
   const [fund, setFund] = useState("");
   const faucet = useAction();
   const deposit = useAction();
+  const gas = useAction();
 
   const { data, error } = usePoll(async () => {
-    const [ausd, margin, series, redemptions] = await Promise.all([
+    const [mon, ausd, margin, series, redemptions] = await Promise.all([
+      monBalance(account.address),
       ausdBalance(account.address),
       marginBalance(account.address, gpux.ausd),
       listSeries(),
@@ -26,7 +29,7 @@ export default function Portfolio() {
     const holdings = (await Promise.all(series.map(async (s) => ({ s, bal: await tokenBalance(s.token, account.address) })))).filter(
       (h) => h.bal > 0n,
     );
-    return { ausd, margin, holdings, redemptions, series };
+    return { mon, ausd, margin, holdings, redemptions, series };
   }, 2000);
 
   return (
@@ -44,7 +47,20 @@ export default function Portfolio() {
         <Row>
           <Stat label="Wallet AUSD" value={data ? fmt(data.ausd, AUSD_DECIMALS) : "—"} />
           <Stat label="Trading AUSD" value={data ? fmt(data.margin, AUSD_DECIMALS) : "—"} />
+          <Stat label="Gas (MON)" value={data ? fmtMon(data.mon) : "—"} color={data && data.mon === 0n ? c.warn : undefined} />
         </Row>
+        {data && data.mon < 10n ** 16n && (
+          <View style={{ marginTop: 10 }}>
+            <Button
+              title="Get gas (testnet MON)"
+              kind="ghost"
+              busy={gas.busy}
+              onPress={() => gas.run(() => requestGas(account.address))}
+            />
+            {gas.error && <Notice kind="error">{gas.error}</Notice>}
+            {gas.ok && <Notice kind="ok">{gas.ok}</Notice>}
+          </View>
+        )}
       </Card>
 
       <Card>
