@@ -1,0 +1,54 @@
+# yaml-language-server: $schema=./node_modules/envio/evm.schema.json
+name: gpux-indexer
+description: GPUx compute exchange on Monad - series, holdings, deliveries, providers, index and Kuru fills
+disable_default_cross_chain: true
+field_selection:
+  transaction_fields:
+    - hash
+contracts:
+  - name: ComputeContractFactory
+    events:
+      - event: SeriesCreated(uint256 indexed seriesId, address indexed provider, address token, string gpuType, string region, uint64 deliveryStart)
+      - event: CapacityMinted(uint256 indexed seriesId, address indexed to, uint256 amount, uint256 bondLocked)
+  - name: ComputeToken
+    events:
+      - event: Transfer(address indexed from, address indexed to, uint256 value)
+  - name: DeliveryEscrow
+    events:
+      - event: RedemptionRequested(uint256 indexed id, uint256 indexed seriesId, address indexed buyer, uint256 amount)
+      - event: DeliverySettled(uint256 indexed id, bool delivered, uint256 bondAmount)
+  - name: SLABondVault
+    events:
+      - event: Deposited(address indexed provider, uint256 amount)
+      - event: Slashed(address indexed provider, uint256 indexed seriesId, address indexed to, uint256 amount)
+  - name: ProviderRegistry
+    events:
+      - event: ProviderRegistered(address indexed provider, string name)
+      - event: DeliveryRecorded(address indexed provider, bool ok)
+  - name: ComputeIndex
+    events:
+      - event: IndexUpdated(bytes32 indexed key, uint128 price, uint64 timestamp)
+  - name: KuruOrderBook
+    events:
+      - event: Trade(uint40 orderId, address makerAddress, bool isBuy, uint256 price, uint96 updatedSize, address takerAddress, address txOrigin, uint96 filledSize)
+chains:
+  - id: 10143 # Monad Testnet
+    start_block: 70458381 # GPUx deployment
+    contracts:
+      - name: ComputeContractFactory
+        address: [0xe65147390d3ea7157Ea22c36BF9406626E373BB4]
+      - name: ComputeToken # registered dynamically from SeriesCreated
+      - name: DeliveryEscrow
+        address: [0x98cd804aE58Ea5FC9fA4Fb403f6D0D88acDd0ac8]
+      - name: SLABondVault
+        address: [0x87011B4fA92B857BfFF5e2a92f0b69FDAC147370]
+      - name: ProviderRegistry
+        address: [0xF9E5cfb8Ab59b38Fa4472a0c06d93048A0897a59]
+      - name: ComputeIndex
+        address: [0x2e58B0f2336dFe76b8bbAb1BfD927E354CBC997F]
+      - name: KuruOrderBook # one Kuru spot market per compute series
+        address:
+          - 0xF79897971C1C495A1Ca43C15EE81589b9De1102f
+          - 0xb0Cd07612a2E7db094DCB6f563866B9D4009dF64
+          - 0x2a7CC86E7817Ce15290B2059F54222404ba15894
+          - 0x88540C94471C377d1faa80b6D6309ABCcdBE3032

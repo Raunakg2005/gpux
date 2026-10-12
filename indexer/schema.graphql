@@ -1,0 +1,67 @@
+type Series {
+  id: ID! # seriesId
+  provider: String!
+  token: String!
+  gpuType: String!
+  region: String!
+  deliveryStart: BigInt!
+  minted: BigInt! # GPU-hours (1e18 units)
+  bondLocked: BigInt! # AUSD (6 decimals)
+  redeemed: BigInt!
+}
+
+type Holding {
+  id: ID! # token-user
+  user: String! @index
+  token: String!
+  balance: BigInt!
+}
+
+type Redemption {
+  id: ID! # redemption id
+  seriesId: String!
+  buyer: String! @index
+  amount: BigInt!
+  status: String! # Pending | Delivered | Failed
+  bondAmount: BigInt # released (Delivered) or paid to buyer (Failed)
+  requestedAt: Int!
+  settledAt: Int
+  requestTx: String!
+  settleTx: String
+}
+
+type Provider {
+  id: ID! # address
+  name: String!
+  deliveriesOk: Int!
+  deliveriesFailed: Int!
+  bondDeposited: BigInt!
+  bondSlashed: BigInt!
+}
+
+type IndexPoint {
+  id: ID! # key-timestamp-logIndex
+  key: String! @index
+  price: BigInt! # AUSD per GPU-hour (6 decimals)
+  timestamp: Int!
+}
+
+type Fill {
+  id: ID! # block-logIndex
+  market: String! @index
+  isBuy: Boolean!
+  price: BigInt! # raw Kuru price
+  size: BigInt! # raw Kuru filled size
+  maker: String!
+  taker: String!
+  timestamp: Int!
+  txHash: String!
+}
+
+type MarketStats {
+  id: ID! # Kuru order book address
+  trades: Int!
+  volume: BigInt! # sum of raw filled size
+  lastPrice: BigInt!
+  lastTradeAt: Int!
+}
