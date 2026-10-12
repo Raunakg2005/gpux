@@ -13,6 +13,8 @@ Each interval (default 60s):
 
 Runs in **DRY RUN** (logs intended orders) until Perpl credentials are set.
 
+**Live on Perpl testnet (account 1161):** first tick opened SHORT 0.145 ETH @ 2513.22, 3x, 121.59 AUSD collateral; the next tick held (drift inside band).
+
 ## Run
 ```bash
 npm install

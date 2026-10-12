@@ -36,7 +36,7 @@ export default function Hedge() {
     const [ctx, enrolled] = await Promise.all([getContext(), hasApiKey()]);
     if (!enrolled) return { ctx, enrolled, accounts: [], positions: [] };
     const [w, p] = await Promise.all([getWallet().catch(() => null), getPositions().catch(() => null)]);
-    return { ctx, enrolled, accounts: w?.accounts ?? [], positions: p?.d ?? [] };
+    return { ctx, enrolled, accounts: w?.as ?? [], positions: p?.d ?? [] };
   }, 3000);
 
   const markets = data?.ctx.markets ?? [];
@@ -116,7 +116,7 @@ export default function Hedge() {
         </Row>
         <Row style={{ marginBottom: 10 }}>
           <Stat label="Mark" value={mark ? mark.toLocaleString() : "—"} />
-          <Stat label="Balance" value={acct ? unscale(acct.b, AUSD_DECIMALS).toFixed(2) : "—"} />
+          <Stat label="Balance" value={acct ? unscale(Number(acct.b), AUSD_DECIMALS).toFixed(2) : "—"} />
         </Row>
         <Segmented options={SIDES} value={side} onChange={setSide} />
         <Input label="Size" value={size} onChangeText={setSize} keyboardType="decimal-pad" suffix={market?.symbol} />

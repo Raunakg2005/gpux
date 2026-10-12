@@ -26,7 +26,7 @@ export type PerplMarket = {
 };
 export type PerplToken = Record<string, unknown> & { address?: Address; symbol?: string; decimals?: number };
 export type PerplPosition = { mkt: number; acc: number; pid: number; sd: 1 | 2; s: number; ep: number; c: number; lv: number; st: number };
-export type PerplAccount = { id: number; fw: boolean; fr: boolean; b: number; lb: number };
+export type PerplAccount = { id: number; fw: boolean; fr: boolean; b: string; lb: string };
 
 export const OrderType = { OpenLong: 1, OpenShort: 2, CloseLong: 3, CloseShort: 4, Cancel: 5 } as const;
 export const OrderFlag = { GTC: 0, PostOnly: 1, FOK: 2, IOC: 4 } as const;
@@ -125,7 +125,8 @@ export async function setupExchangeAccount(wallet: Wallet, collateral: Address, 
   );
 }
 
-export const getWallet = () => signed<{ accounts?: PerplAccount[] } & Record<string, unknown>>("GET", "/v1/trading/wallet");
+// The live API returns accounts under `as` with string balances (docs say `accounts`).
+export const getWallet = () => signed<{ as?: PerplAccount[] } & Record<string, unknown>>("GET", "/v1/trading/wallet");
 export const getPositions = () => signed<{ sn: number; d: PerplPosition[] }>("GET", "/v1/trading/positions");
 
 const scale = (v: number, decimals: number) => Math.round(v * 10 ** decimals);

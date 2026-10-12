@@ -50,6 +50,13 @@ export async function getMarket(symbol: string): Promise<Market> {
 
 export const markPrice = (m: Market) => (m.state?.mrk ?? 0) / 10 ** m.config.price_decimals;
 
+export type Account = { id: number; fw: boolean; fr: boolean; b: string; lb: string };
+
+/** Wallet info: the exchange accounts owned by the API key's wallet (live API uses `as`, not `accounts`). */
+export async function getWallet(): Promise<{ as?: Account[] } & Record<string, unknown>> {
+  return signed("GET", "/v1/trading/wallet");
+}
+
 export async function getPositions(): Promise<Position[]> {
   return (await signed<{ d: Position[] }>("GET", "/v1/trading/positions")).d;
 }
