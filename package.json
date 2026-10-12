@@ -1,0 +1,13 @@
+{
+  "name": "gpux",
+  "private": true,
+  "packageManager": "pnpm@9.0.0",
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev:mobile": "pnpm --filter @gpux/mobile start",
+    "dev:portal": "pnpm --filter @gpux/provider-portal dev",
+    "dev:bot": "pnpm --filter @gpux/hedge-bot dev",
+    "contracts:build": "cd contracts && forge build",
+    "contracts:test": "cd contracts && forge test -vv"
+  }
+}

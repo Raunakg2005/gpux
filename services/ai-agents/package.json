@@ -1,0 +1,17 @@
+{
+  "name": "@gpux/ai-agents",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/server.ts"
+  },
+  "dependencies": {
+    "@gpux/shared": "workspace:*",
+    "openai": "4.67.3"
+  },
+  "devDependencies": {
+    "tsx": "4.19.1",
+    "typescript": "5.6.3"
+  }
+}

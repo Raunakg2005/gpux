@@ -1,0 +1,9 @@
+packages:
+  - "apps/*"
+  - "!apps/mobile"
+  - "services/*"
+  - "packages/*"
+  - "indexer"
+  - "cre-workflows"
+  - "metamask-plugin"
+  - "contracts"

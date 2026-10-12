@@ -1,0 +1,9 @@
+{
+  "ausd": "0xe504b470987fB6271Cdf997bcD1cc63B843e3eD9",
+  "computeFactory": "0xe65147390d3ea7157Ea22c36BF9406626E373BB4",
+  "computeIndex": "0x2e58B0f2336dFe76b8bbAb1BfD927E354CBC997F",
+  "cre": "0xBAc277e47dd7B95c04BB3517b76c1dd9151A054a",
+  "deliveryEscrow": "0x98cd804aE58Ea5FC9fA4Fb403f6D0D88acDd0ac8",
+  "providerRegistry": "0xF9E5cfb8Ab59b38Fa4472a0c06d93048A0897a59",
+  "slaBondVault": "0x87011B4fA92B857BfFF5e2a92f0b69FDAC147370"
+}

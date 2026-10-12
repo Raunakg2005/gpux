@@ -1,0 +1,17 @@
+{
+  "name": "@gpux/scripts",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "kuru:markets": "tsx deploy-kuru-markets.ts"
+  },
+  "dependencies": {
+    "@kuru-labs/kuru-sdk": "0.0.95",
+    "dotenv": "16.4.5",
+    "ethers": "5.7.1"
+  },
+  "devDependencies": {
+    "tsx": "4.19.1",
+    "typescript": "5.6.3"
+  }
+}
