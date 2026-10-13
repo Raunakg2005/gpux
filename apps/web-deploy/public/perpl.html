@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GPUx Perpl Risk Dashboard</title>
+<style>
+  :root { --bg:#07090d; --card:#10141b; --alt:#161b24; --border:#232a36; --text:#e8ecf2; --dim:#8b95a7; --accent:#7c5cff; --green:#22c55e; --red:#ef4444; --amber:#f59e0b; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .wrap { max-width:1180px; margin:0 auto; padding:20px 16px 40px; }
+  header { display:flex; flex-wrap:wrap; align-items:baseline; gap:12px; justify-content:space-between; margin-bottom:16px; }
+  h1 { margin:0; font-size:22px; } h1 span { color:var(--accent); }
+  .sub { color:var(--dim); font-size:13px; }
+  .live { color:var(--green); font-size:12px; } .live::before { content:"● "; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; margin-bottom:14px; }
+  .kpi, .card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 14px; }
+  .kpi .l { color:var(--dim); font-size:11px; text-transform:uppercase; letter-spacing:.06em; }
+  .kpi .v { font-size:20px; font-weight:700; font-variant-numeric:tabular-nums; margin-top:2px; }
+  .card { margin-bottom:14px; overflow-x:auto; }
+  h2 { font-size:14px; margin:0 0 10px; text-transform:uppercase; letter-spacing:.06em; color:var(--dim); }
+  table { width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums; min-width:640px; }
+  th, td { text-align:right; padding:7px 8px; border-bottom:1px solid var(--border); white-space:nowrap; }
+  th:first-child, td:first-child { text-align:left; }
+  th { color:var(--dim); font-weight:600; font-size:12px; }
+  .pos { color:var(--green); } .neg { color:var(--red); } .warn { color:var(--amber); }
+  .bar { height:6px; background:var(--alt); border-radius:3px; overflow:hidden; min-width:80px; }
+  .bar i { display:block; height:100%; background:var(--accent); }
+  footer { color:var(--dim); font-size:12px; margin-top:8px; } a { color:var(--accent); }
+  .err { color:var(--red); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1><span>GPUx</span> · Perpl risk dashboard</h1>
+      <div class="sub">Protocol-level market risk + wallet-level positions for the GPUx hedge-bot account · Perpl on Monad testnet</div>
+    </div>
+    <div class="live" id="updated">connecting…</div>
+  </header>
+
+  <div class="grid" id="kpis"></div>
+
+  <div class="card">
+    <h2>Wallet view · hedge-bot account</h2>
+    <div class="sub" id="acct" style="margin-bottom:8px"></div>
+    <table>
+      <thead><tr><th>Position</th><th>Size</th><th>Entry</th><th>Mark</th><th>Notional</th><th>Lev</th><th>Collateral</th><th>uPnL</th><th>Est. liq</th><th>To liq</th></tr></thead>
+      <tbody id="positions"></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Protocol view · all Perpl markets</h2>
+    <table>
+      <thead><tr><th>Market</th><th>Mark</th><th>Oracle</th><th>Basis</th><th>Bid / Ask</th><th>24h</th><th>Open interest</th><th>OI share</th><th>24h volume</th><th>Vol / OI</th><th>Funding (raw)</th></tr></thead>
+      <tbody id="markets"></tbody>
+    </table>
+  </div>
+
+  <footer>
+    Data: Perpl REST API (public context + signed read-only wallet/positions) via a GPUx serverless function, refreshed every 5 s.
+    Liquidation prices are estimates (isolated margin, ~5% maintenance). Bot strategy: hedge GPU-hour inventory, tilted by Nansen smart-money flows ·
+    <a href="https://github.com/Raunakg2005/gpux/tree/main/services/hedge-bot">hedge bot</a> · <a href="/">GPUx app</a>
+  </footer>
+</div>
+<script>
+const usd = (n, d = 0) => "$" + Number(n).toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d });
+const num = (n, d = 2) => Number(n).toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: d });
+const sign = (n, d = 2) => `<span class="${n >= 0 ? "pos" : "neg"}">${n >= 0 ? "+" : ""}${num(n, d)}</span>`;
+const kpi = (l, v) => `<div class="kpi"><div class="l">${l}</div><div class="v">${v}</div></div>`;
+
+async function load() {
+  try {
+    const d = await (await fetch("/api/perpl-dashboard", { cache: "no-store" })).json();
+    if (d.error) throw new Error(d.error);
+    const ms = d.markets;
+    const totalOi = ms.reduce((a, m) => a + m.openInterestUsd, 0);
+    const totalVol = ms.reduce((a, m) => a + m.volume24hUsd, 0);
+    const w = d.wallet;
+    const util = w && w.balance + w.locked > 0 ? (w.positions.reduce((a, p) => a + p.collateral, 0) / (w.balance + w.positions.reduce((a, p) => a + p.collateral, 0))) * 100 : 0;
+    document.getElementById("kpis").innerHTML = [
+      kpi("Protocol open interest", usd(totalOi)),
+      kpi("Protocol 24h volume", usd(totalVol)),
+      kpi("Markets live", ms.filter((m) => m.open).length + " / " + ms.length),
+      w ? kpi("Wallet equity (free)", usd(w.balance, 2) + " AUSD") : "",
+      w ? kpi("Unrealized PnL", sign(w.totalUnrealizedPnl)) : "",
+      w ? kpi("Nearest liquidation", w.nearestLiqPct == null ? "—" : `<span class="${w.nearestLiqPct < 10 ? "neg" : w.nearestLiqPct < 25 ? "warn" : "pos"}">${num(w.nearestLiqPct, 1)}%</span>`) : "",
+      w ? kpi("Margin utilisation", num(util, 1) + "%") : "",
+    ].join("");
+
+    if (w) {
+      document.getElementById("acct").textContent = `Account #${w.accountId} · ${w.address} · order forwarding ${w.forwarding ? "on" : "off"} · gross notional ${usd(w.totalNotional, 2)}`;
+      document.getElementById("positions").innerHTML = w.positions.length
+        ? w.positions.map((p) => `<tr><td><b class="${p.side === "SHORT" ? "neg" : "pos"}">${p.side}</b> ${p.market}</td><td>${num(p.size, 3)}</td><td>${num(p.entry)}</td><td>${num(p.mark)}</td><td>${usd(p.notional, 2)}</td><td>${num(p.leverage, 1)}x</td><td>${usd(p.collateral, 2)}</td><td>${sign(p.unrealizedPnl)}</td><td>${num(p.estLiquidation)}</td><td class="${p.distanceToLiqPct < 10 ? "neg" : p.distanceToLiqPct < 25 ? "warn" : "pos"}">${num(p.distanceToLiqPct, 1)}%</td></tr>`).join("")
+        : `<tr><td colspan="10" style="text-align:left">No open positions</td></tr>`;
+    }
+
+    document.getElementById("markets").innerHTML = ms
+      .sort((a, b) => b.openInterestUsd - a.openInterestUsd)
+      .map((m) => {
+        const share = totalOi ? (m.openInterestUsd / totalOi) * 100 : 0;
+        return `<tr><td><b>${m.symbol}</b></td><td>${num(m.mark, m.priceDecimals)}</td><td>${num(m.oracle, m.priceDecimals)}</td><td class="${Math.abs(m.basisBps) > 20 ? "warn" : ""}">${num(m.basisBps, 1)} bps</td><td>${m.bid != null ? num(m.bid, m.priceDecimals) + " / " + num(m.ask, m.priceDecimals) : "—"}</td><td>${m.change24hPct == null ? "—" : sign(m.change24hPct) + "%"}</td><td>${usd(m.openInterestUsd)}</td><td><div class="bar"><i style="width:${share}%"></i></div></td><td>${usd(m.volume24hUsd)}</td><td>${m.openInterestUsd ? num(m.volume24hUsd / m.openInterestUsd, 1) + "x" : "—"}</td><td>${m.fundingRateRaw ?? "—"}</td></tr>`;
+      })
+      .join("");
+    document.getElementById("updated").textContent = "live · updated " + new Date(d.at).toLocaleTimeString();
+  } catch (e) {
+    document.getElementById("updated").innerHTML = `<span class="err">error: ${e.message}</span>`;
+  }
+}
+load();
+setInterval(load, 5000);
+</script>
+</body>
+</html>

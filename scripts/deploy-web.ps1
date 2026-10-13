@@ -14,6 +14,7 @@ New-Item -ItemType Directory -Force $out | Out-Null
 Copy-Item -Recurse -Force (Join-Path $repo "apps\mobile\dist\*") $out
 Copy-Item -Recurse -Force (Join-Path $repo "apps\web-deploy\api") $out
 Copy-Item -Force (Join-Path $repo "apps\web-deploy\package.json"), (Join-Path $repo "apps\web-deploy\vercel.json") $out
+Copy-Item -Force (Join-Path $repo "apps\web-deploy\public\*") $out
 
 Push-Location $out
 # Store the faucet key as a Vercel secret once (value read from gpux/.env, never printed).
@@ -23,6 +24,13 @@ if ($existing -notmatch "FAUCET_PRIVATE_KEY") {
   if (-not $line) { throw "FAUCET_PRIVATE_KEY missing from gpux/.env" }
   $line.Substring("FAUCET_PRIVATE_KEY=".Length).Trim() | vercel env add FAUCET_PRIVATE_KEY production --sensitive --yes --force
   if ($LASTEXITCODE -ne 0) { Pop-Location; throw "could not store FAUCET_PRIVATE_KEY in Vercel" }
+}
+# Perpl key for the public risk dashboard's read-only wallet view.
+foreach ($name in @("PERPL_API_KEY", "PERPL_API_SECRET")) {
+  if ($existing -notmatch $name) {
+    $pline = Get-Content (Join-Path $repo ".env") | Where-Object { $_ -match "^$name=" } | Select-Object -First 1
+    if ($pline) { $pline.Substring($name.Length + 1).Trim() | vercel env add $name production --sensitive --yes --force }
+  }
 }
 # Copilot key (Kimi), same pattern: stored once as a sensitive Vercel env var.
 if ($existing -notmatch "KIMI_API_KEY") {
